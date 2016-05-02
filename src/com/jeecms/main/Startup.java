@@ -26,7 +26,7 @@ public class Startup {
         try {
             final String IPLATFORM_ROOT = System.getenv("JEECMS_HOME") != null ? System.getenv("JEECMS_HOME") : ".";
             final String RESOURCE_BASE = IPLATFORM_ROOT + File.separator + "WebContent";
-            final String CONTEXT_PATH = "/jeecms";
+            final String CONTEXT_PATH = "/";
             // -Dport=8080
             int port = Integer.getInteger("port", 8080).intValue();
             System.setProperty("org.apache.jasper.compiler.disablejsr199", "true");
@@ -56,19 +56,6 @@ public class Startup {
             final URI uri = Startup.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             resources.add(Resource.newResource("jar:" + uri + "!/"));
 
-            // module resource
-            File module = new File(IPLATFORM_ROOT);
-            if (module.exists()) {
-                List<String> webappdirs = new ArrayList();
-                findWebApp(module, webappdirs);
-                for (String webappdir : webappdirs) {
-                    resources.add(Resource.newResource(webappdir));
-                }
-            } else {
-                log.info("not found module!");
-                log.info("SYSTEM EXIT!");
-                System.exit(0);
-            }
             Resource[] collection = new Resource[resources.size()];
             int index = 0;
             for (Resource resource : resources) {
@@ -89,15 +76,4 @@ public class Startup {
         }
     }
 
-    private static void findWebApp(File root, List<String> webappdirs) {
-        if (root.exists() && root.isDirectory()) {
-            for (File file : root.listFiles()) {
-                if (file.isDirectory() && file.getName().equalsIgnoreCase("webapp")) {
-                    webappdirs.add(file.getPath());
-                } else if (file.isDirectory()) {
-                    findWebApp(file, webappdirs);
-                }
-            }
-        }
-    }
 }
